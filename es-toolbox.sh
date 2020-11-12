@@ -111,6 +111,37 @@ curl -X PUT "${es_url}/_cluster/settings?pretty" -H 'Content-Type: application/j
 #====================diagnostic area  end ====================
 
 
+#=====================index manager begin =====================
+
+
+delete_index(){
+index_area=(index_name)
+start_date=20200701
+end_date=20200731
+start_sec=`date -d "$start_date" "+%s"`
+end_sec=`date -d "$end_date" "+%s"`
+
+
+
+
+for((i=start_sec;i<=end_sec;i+=86400)); 
+
+
+do
+    	INDEX_DATE=$(date -d "@$i" "+%Y.%m.%d")
+
+	for item in ${index_area[*]}
+	do
+   	  url="curl -u elastic:it-elk  -XDELETE '${es_url}/${item}-${INDEX_DATE}'"
+   	  eval $url
+	done
+
+done
+
+}
+#=====================index manager end ======================
+
+
 
 #==================== menu begin =========================
 menu(){
@@ -127,6 +158,7 @@ cat <<-EOF
 *        5.   备份 mapping                                              *
 *        6.   备份 data                                                 *
 *        7.   恢复 data                                                 *
+*        8.   删除 index                                                *
 *        q.   给朕退下                                                  *
 *        h.   获得上仙的帮助                                            *
 *                                                                       *
@@ -183,6 +215,9 @@ do
 		echo "开始恢复..."
 		#restore_data 
 		echo ""
+	;;
+	8） 
+	        delete_index
 	;;
 
 	q|quit|exit)
